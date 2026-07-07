@@ -1,0 +1,18 @@
+[project]
+name = "sample"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "numpy>=2.5.0",
+    "pandas>=3.0.3",
+    "python-dotenv>=1.2.2",
+    "requests>=2.34.2",
+    "langchain>=0.1.0",
+    "langchain-core>=0.1.0",
+    "langchain-openrouter>=0.1.0",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic-settings>=2.0.0",
+]
