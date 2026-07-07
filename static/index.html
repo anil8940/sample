@@ -77,6 +77,29 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .clear-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #565869;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .clear-btn:hover {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+
         .chat-container {
             flex: 1;
             overflow-y: auto;
@@ -392,9 +415,12 @@
     <div class="container">
         <div class="header">
             <h1>💬 Chat</h1>
-            <div class="mode-toggle">
-                <button class="mode-btn active" onclick="setMode('stream')">Stream</button>
-                <button class="mode-btn" onclick="setMode('normal')">Normal</button>
+            <div class="header-controls">
+                <button class="clear-btn" onclick="clearHistory()" title="Clear conversation">🗑️ Clear</button>
+                <div class="mode-toggle">
+                    <button class="mode-btn active" onclick="setMode('stream')">Stream</button>
+                    <button class="mode-btn" onclick="setMode('normal')">Normal</button>
+                </div>
             </div>
         </div>
 
@@ -432,6 +458,24 @@
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
+        }
+
+        async function clearHistory() {
+            if (confirm('Are you sure you want to clear the conversation history?')) {
+                try {
+                    await fetch('/clear-history', { method: 'POST' });
+                    document.getElementById('chatContainer').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">💬</div>
+                            <h2>Start a conversation</h2>
+                            <p>Ask me anything and I'll help you out</p>
+                        </div>
+                    `;
+                    isFirstMessage = true;
+                } catch (error) {
+                    alert('Error clearing history: ' + error.message);
+                }
+            }
         }
 
         function handleKeyDown(event) {
