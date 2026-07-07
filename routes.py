@@ -1,6 +1,6 @@
 """API routes for the LLM application."""
 
-from typing import Generator, List
+from typing import Generator
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse, HTMLResponse
 import os

@@ -2,7 +2,6 @@
 
 import os
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.messages import BaseMessage, HumanMessage
 from langchain_openrouter import ChatOpenRouter
 from config import settings
 
