@@ -584,7 +584,6 @@ dependencies = [
     { name = "langchain-openrouter" },
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
-    { name = "requests" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -595,7 +594,6 @@ requires-dist = [
     { name = "langchain-openrouter", specifier = ">=0.1.0" },
     { name = "pydantic-settings", specifier = ">=2.0.0" },
     { name = "python-dotenv", specifier = ">=1.2.2" },
-    { name = "requests", specifier = ">=2.34.2" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.24.0" },
 ]
 
