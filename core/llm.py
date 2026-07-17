@@ -15,6 +15,8 @@ def initialize_llm():
     llm = ChatOpenRouter(
         model="openrouter/free",
         temperature=0.3,
+    ).bind_tools(
+        tools=[]
     )
     return llm
 
