@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import TypedDict
 
 from langchain_core.documents import Document
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -53,7 +52,7 @@ def ingest_texts(texts: list[str], source: str) -> int:
 class RAGState(MessagesState):
     documents: list[Document]
     answer: str
-
+ 
 
 def retrieve(state: RAGState) -> dict:
     """Fetch the most relevant chunks for the user's question."""
@@ -69,13 +68,14 @@ def answer(state: RAGState) -> dict:
         for document in state["documents"]
     ) or "No relevant documents were retrieved."
     response = llm.invoke([
-        SystemMessage(
-            content=(
-                "You are a retrieval-augmented assistant. Answer using only the provided "
-                "context. If the context does not answer the question, say that you do not "
-                "have enough information. Do not invent citations.\n\n"
-                f"Retrieved context:\n{context}"
-            )
+        SystemMessage( 
+    content=(
+        "You are a helpful assistant. Use the retrieved context when it is relevant. "
+        "If the context does not fully answer the question, you may rely on your own knowledge "
+        "to provide a clear and accurate response. Always prefer retrieved context when available, "
+        "but never leave the user without an answer. Do not invent citations.\n\n"
+        f"Retrieved context:\n{context}"
+    )
         ),
         *state["messages"],
     ])
