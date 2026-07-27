@@ -59,6 +59,7 @@ uv.lock
 *.db
 *.sqlite
 *.sqlite3
+qdrant_storage/
 
 # Temporary files
 *.tmp

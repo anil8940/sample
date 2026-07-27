@@ -100,6 +100,22 @@
             border-color: #999;
         }
 
+        .upload-btn {
+            padding: 6px 12px;
+            border: 1px solid #667eea;
+            background: #f5f3ff;
+            color: #5142a8;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .chat-container {
             flex: 1;
             overflow-y: auto;
@@ -416,6 +432,8 @@
         <div class="header">
             <h1>💬 Chat</h1>
             <div class="header-controls">
+                <input id="pdfInput" type="file" accept="application/pdf,.pdf" hidden onchange="uploadPdf()">
+                <button class="upload-btn" id="uploadBtn" onclick="document.getElementById('pdfInput').click()" title="Upload a PDF">Upload PDF</button>
                 <button class="clear-btn" onclick="clearHistory()" title="Clear conversation">🗑️ Clear</button>
                 <div class="mode-toggle">
                     <button class="mode-btn active" onclick="setMode('stream')">Stream</button>
@@ -451,6 +469,8 @@
         let currentMode = 'stream';
         let isLoading = false;
         let isFirstMessage = true;
+        const ragThreadId = localStorage.getItem('ragThreadId') || crypto.randomUUID();
+        localStorage.setItem('ragThreadId', ragThreadId);
 
         function setMode(mode) {
             currentMode = mode;
@@ -463,7 +483,11 @@
         async function clearHistory() {
             if (confirm('Are you sure you want to clear the conversation history?')) {
                 try {
-                    await fetch('/clear-history', { method: 'POST' });
+                    await fetch('/clear-history', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ thread_id: ragThreadId })
+                    });
                     document.getElementById('chatContainer').innerHTML = `
                         <div class="empty-state">
                             <div class="empty-state-icon">💬</div>
@@ -475,6 +499,42 @@
                 } catch (error) {
                     alert('Error clearing history: ' + error.message);
                 }
+            }
+        }
+
+        async function uploadPdf() {
+            const fileInput = document.getElementById('pdfInput');
+            const file = fileInput.files[0];
+            if (!file || isLoading) return;
+
+            isLoading = true;
+            document.getElementById('uploadBtn').disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                const response = await fetch('/documents/pdf', { method: 'POST', body: formData });
+                const body = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(body);
+                } catch {
+                    throw new Error(body || `HTTP ${response.status}`);
+                }
+                if (!response.ok) throw new Error(data.detail || `HTTP ${response.status}`);
+
+                if (isFirstMessage) {
+                    document.getElementById('chatContainer').innerHTML = '';
+                    isFirstMessage = false;
+                }
+                addMessage(`Indexed **${data.source}** (${data.chunks_stored} chunks). Ask a question about it.`, 'assistant');
+            } catch (error) {
+                addMessage(`Upload error: ${error.message}`, 'error');
+            } finally {
+                fileInput.value = '';
+                isLoading = false;
+                document.getElementById('uploadBtn').disabled = false;
+                document.getElementById('sendBtn').disabled = false;
             }
         }
 
@@ -507,11 +567,7 @@
             input.style.height = '48px';
 
             try {
-                if (currentMode === 'stream') {
-                    await streamResponse(question);
-                } else {
-                    await normalResponse(question);
-                }
+                await ragResponse(question);
             } catch (error) {
                 addMessage(`⚠️ Error: ${error.message}`, 'error');
             } finally {
@@ -582,6 +638,20 @@
 
             const data = await response.json();
             addMessage(data.response, 'assistant');
+        }
+
+        async function ragResponse(question) {
+            const response = await fetch('/rag/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question, thread_id: ragThreadId })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || `HTTP ${response.status}`);
+
+            const sources = data.sources?.map(item => item.source).join(', ');
+            const answer = sources ? `${data.response}\n\n**Sources:** ${sources}` : data.response;
+            addMessage(answer, 'assistant');
         }
 
         function addMessage(text, sender) {
