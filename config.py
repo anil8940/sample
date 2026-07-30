@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
     openrouter_api_key: str = ""
-    qdrant_url: str = "http://localhost:6333"
+    qdrant_url: str = ""
+    qdrant_api_key: str = ""
     qdrant_collection: str = "documents-gemini"
     embedding_model: str = "gemini-embedding-2-preview"
     retrieval_k: int = 4
