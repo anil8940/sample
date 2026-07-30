@@ -21,7 +21,10 @@ from core.llm import llm
 def get_vector_store() -> QdrantVectorStore:
     """Return a Qdrant vector store, creating its collection when needed."""
     embeddings = GoogleGenerativeAIEmbeddings(model=settings.embedding_model)
-    client = QdrantClient(url=settings.qdrant_url)
+    client = QdrantClient(
+        url=settings.qdrant_url,
+        api_key=settings.qdrant_api_key
+    )
     if not client.collection_exists(settings.qdrant_collection):
         vector_size = len(embeddings.embed_query("dimension check"))
         client.create_collection(
@@ -91,7 +94,7 @@ builder.add_edge("retrieve", "answer")
 builder.add_edge("answer", END)
 memory = InMemorySaver()
 rag_graph = builder.compile(checkpointer=memory)
-
+rag_graph.get_graph().draw_mermaid_png(output_file_path="rag_graph.png")
 
 def ask_rag(question: str, thread_id: str) -> tuple[str, list[dict[str, str]]]:
     """Run the graph with checkpointed LangGraph memory for one chat thread."""
