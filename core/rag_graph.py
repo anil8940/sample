@@ -8,29 +8,7 @@ from langgraph.graph import END, START, MessagesState, StateGraph
 from config import settings
 from core.llm import chain, llm
 from core.rag_store import get_vector_store
-
-
-DOC_RELEVANCE_TERMS = (
-    "document",
-    "documents",
-    "pdf",
-    "file",
-    "source",
-    "context",
-    "passage",
-    "excerpt",
-    "chapter",
-    "page",
-    "section",
-    "article",
-    "report",
-    "manual",
-    "policy",
-    "contract",
-    "instruction",
-    "guideline",
-    "quote",
-)
+from constants import DOC_RELEVANCE_TERMS
 
 
 class RAGState(MessagesState):
