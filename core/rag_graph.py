@@ -8,7 +8,7 @@ from langgraph.graph import END, START, MessagesState, StateGraph
 from config import settings
 from core.llm import chain, llm
 from core.rag_store import get_vector_store
-from constants import DOC_RELEVANCE_TERMS
+from constants import DOC_RELEVANCE_TERMS, PHRASE_RELEVANCE_TERMS
 
 
 class RAGState(MessagesState):
@@ -62,18 +62,7 @@ def should_use_rag(question: str) -> bool:
         return True
     return any(
         phrase in normalized
-        for phrase in (
-            "according to",
-            "based on",
-            "from the",
-            "in the document",
-            "in the uploaded",
-            "summarize the document",
-            "summarize this document",
-            "what does the",
-            "what does this",
-            "tell me about",
-        )
+        for phrase in PHRASE_RELEVANCE_TERMS
     )
 
 
