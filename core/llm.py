@@ -1,6 +1,7 @@
 """LLM initialization and chain setup."""
 
 import os
+from langchain.tools import tool
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openrouter import ChatOpenRouter
 from config import settings
@@ -15,8 +16,6 @@ def initialize_llm():
     llm = ChatOpenRouter(
         model="openrouter/free",
         temperature=0.3,
-    ).bind_tools(
-        tools=[]
     )
     return llm
 
@@ -30,7 +29,7 @@ def create_chain(llm):
     
     chain = prompt_template | llm
     return chain
-
+    
 
 # Initialize LLM and chain at module load time
 llm = initialize_llm()
