@@ -7,6 +7,7 @@ from langchain_core.documents import Document
 from core.rag_graph import (
     ask_rag as graph_ask_rag,
     clear_rag_history as graph_clear_rag_history,
+    should_use_rag,
 )
 from core.rag_store import ingest_documents as store_ingest_documents, ingest_texts as store_ingest_texts
 

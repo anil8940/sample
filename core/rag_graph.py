@@ -8,7 +8,7 @@ from langgraph.graph import END, START, MessagesState, StateGraph
 from config import settings
 from core.llm import chain, llm
 from core.rag_store import get_vector_store
-from constants import DOC_RELEVANCE_TERMS, PHRASE_RELEVANCE_TERMS
+from constants.rag_doc_const import DOC_RELEVANCE_TERMS, PHRASE_RELEVANCE_TERMS
 
 
 class RAGState(MessagesState):
